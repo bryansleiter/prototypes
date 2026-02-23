@@ -1,789 +1,1194 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jaguar Search - Cars & Bids</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', sans-serif;
-            background: #171717;
-            color: #FFFFFF;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .container {
-            width: 390px;
-            margin: 0 auto;
-            background: #171717;
-            min-height: 100vh;
-        }
-
-        /* Header */
-        .header {
-            height: 48px;
-            background: #171717;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 13px 0 13px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            width: 132px;
-            height: 21px;
-        }
-
-        .logo svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 1px;
-        }
-
-        .header-btn {
-            width: 42px;
-            height: 42px;
-            background: #171717;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .header-btn img {
-            width: 22px;
-            height: 22px;
-        }
-
-        .notif-badge {
-            position: absolute;
-            top: 2px;
-            right: -4px;
-            background: #4AD493;
-            color: #262626;
-            font-size: 13px;
-            font-weight: 700;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            letter-spacing: -1px;
-        }
-
-        .hamburger {
-            width: 40px;
-            height: 40px;
-        }
-
-        /* Content */
-        .content {
-            padding: 6px 10px 0 10px;
-        }
-
-        /* Page Title */
-        .page-title {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        /* Model Pills */
-        .model-pills {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .model-pills::-webkit-scrollbar {
-            display: none;
-        }
-
-        .model-pill {
-            flex-shrink: 0;
-            padding: 9px 13px;
-            border: 1px solid #28523e;
-            border-radius: 20px;
-            background: linear-gradient(90deg, #1b2721 0%, #1b2721 100%);
-            font-size: 14px;
-            font-weight: 500;
-            color: #e7e7e7;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        /* Filter Pills */
-        .filter-pills {
-            display: flex;
-            gap: 8px;
-            height: 48px;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .filter-pill {
-            flex: 1;
-            height: 40px;
-            padding: 0 14px;
-            border: 1px solid #424242;
-            border-radius: 10px;
-            background: transparent;
-            font-size: 14px;
-            font-weight: 500;
-            color: #FFFFFF;
-            letter-spacing: -0.5px;
-            cursor: pointer;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }
-
-        .filter-pill::after {
-            content: '▾';
-            font-size: 12px;
-        }
-
-        /* Save Button */
-        .save-button {
-            width: 100%;
-            height: 44px;
-            background: #FFE55F;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            color: #262626;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            margin-bottom: 20px;
-        }
-
-        .save-button img {
-            width: 16px;
-            height: 16px;
-        }
-
-        /* Auction Title & Sorts */
-        .auction-header {
-            margin-bottom: 10px;
-        }
-
-        .auction-title {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .sort-tabs {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 10px;
-        }
-
-        .sort-tabs::-webkit-scrollbar {
-            display: none;
-        }
-
-        .sort-tab {
-            font-size: 14px;
-            font-weight: 500;
-            letter-spacing: -0.5px;
-            white-space: nowrap;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .sort-tab.active {
-            color: #FFFFFF;
-        }
-
-        .sort-tab.inactive {
-            color: #828282;
-        }
-
-        /* Auction Cards */
-        .auction-cards {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .auction-card {
-            width: 100%;
-            height: 340px;
-            position: relative;
-        }
-
-        .auction-image {
-            width: 100%;
-            height: 242px;
-            border-radius: 10px;
-            object-fit: cover;
-        }
-
-        .bid-bar {
-            position: absolute;
-            top: 209px;
-            left: 8px;
-            background: #262626;
-            padding: 4px 7px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-
-        .bid-icon {
-            width: 10px;
-            height: 10px;
-        }
-
-        .bid-time {
-            font-size: 14px;
-            font-weight: 500;
-            color: #FFFFFF;
-        }
-
-        .bid-label {
-            font-size: 14px;
-            font-weight: 400;
-            color: #FFFFFF;
-            opacity: 0.7;
-        }
-
-        .bid-amount {
-            font-size: 14px;
-            font-weight: 500;
-            color: #FFFFFF;
-        }
-
-        .watch-button {
-            position: absolute;
-            top: 246px;
-            right: 0;
-            width: 40px;
-            height: 40px;
-            background: transparent;
-            border: none;
-            font-size: 22px;
-            color: #FFFFFF;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .auction-title-text {
-            margin-top: 10px;
-            font-size: 17px;
-            font-weight: 700;
-            color: #dbdbdb;
-            letter-spacing: -0.17px;
-            line-height: 1.2;
-        }
-
-        .auction-description {
-            margin-top: 4px;
-            font-size: 15px;
-            font-weight: 400;
-            color: #dbdbdb;
-            letter-spacing: -0.25px;
-            line-height: 20px;
-        }
-
-        .auction-location {
-            margin-top: 12px;
-            font-size: 15px;
-            font-weight: 400;
-            color: #828282;
-            letter-spacing: -0.25px;
-            line-height: 20px;
-        }
-
-        /* Bottom Sheet Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .bottom-sheet {
-            width: 390px;
-            background: #171717;
-            border-radius: 20px 20px 0 0;
-            padding: 20px;
-            transform: translateY(100%);
-            transition: transform 0.3s ease-out;
-        }
-
-        .modal-overlay.active .bottom-sheet {
-            transform: translateY(0);
-        }
-
-        .sheet-close {
-            position: absolute;
-            top: 11px;
-            right: 10px;
-            width: 40px;
-            height: 40px;
-            background: #171717;
-            border: none;
-            font-size: 20px;
-            font-weight: 700;
-            color: #e8eaeb;
-            cursor: pointer;
-        }
-
-        .sheet-icon {
-            width: 50px;
-            height: 50px;
-            margin: 26px auto 8px;
-            position: relative;
-        }
-
-        .sheet-icon img {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 32px;
-            height: 32px;
-        }
-
-        .sheet-title {
-            font-size: 30px;
-            font-weight: 700;
-            color: #dbdbdb;
-            text-align: center;
-            letter-spacing: -0.3px;
-            margin-bottom: 40px;
-        }
-
-        .info-box {
-            background: #171717;
-            border: 1px solid #252525;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 40px;
-            text-align: center;
-        }
-
-        .info-pill {
-            display: inline-block;
-            padding: 9px 13px;
-            border: 1px solid #28523e;
-            border-radius: 20px;
-            background: linear-gradient(90deg, #1b2721 0%, #1b2721 100%);
-            font-size: 14px;
-            font-weight: 500;
-            color: #e7e7e7;
-            margin-bottom: 10px;
-        }
-
-        .info-text {
-            font-size: 15px;
-            font-weight: 400;
-            color: #dbdbdb;
-            line-height: 22px;
-            letter-spacing: -0.4px;
-        }
-
-        .notification-options {
-            margin-bottom: 40px;
-        }
-
-        .notification-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .notification-label {
-            font-size: 15px;
-            font-weight: 400;
-            color: #dbdbdb;
-            line-height: 20px;
-            letter-spacing: -0.4px;
-        }
-
-        .toggle {
-            width: 75px;
-            height: 35px;
-            border-radius: 6px;
-            position: relative;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .toggle.on {
-            background: #4ad493;
-        }
-
-        .toggle.off {
-            background: #262626;
-        }
-
-        .toggle-slider {
-            width: 25px;
-            height: 25px;
-            border-radius: 4px;
-            position: absolute;
-            top: 5px;
-            box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.14);
-            transition: left 0.3s, background 0.3s;
-        }
-
-        .toggle.on .toggle-slider {
-            left: 45px;
-            background: white;
-        }
-
-        .toggle.off .toggle-slider {
-            left: 5px;
-            background: #828282;
-        }
-
-        .toggle-text {
-            position: absolute;
-            top: 9px;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .toggle.on .toggle-text {
-            left: 15px;
-            color: #0f2236;
-        }
-
-        .toggle.off .toggle-text {
-            right: 15px;
-            color: #828282;
-        }
-
-        .done-button {
-            width: 100%;
-            height: 44px;
-            background: #4ad493;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            color: #262626;
-            cursor: pointer;
-            margin-bottom: 15px;
-        }
-
-        .watch-list-note {
-            font-size: 15px;
-            font-weight: 400;
-            color: #828282;
-            text-align: center;
-            line-height: 22px;
-            letter-spacing: -0.4px;
-        }
-
-        .watch-list-note a {
-            color: #828282;
-            text-decoration: underline;
-        }
-    </style>
+<!-- saved from url=(0056)file:///Users/bryan/Downloads/cb-onboarding-apple_2.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Cars &amp; Bids — Setup</title>
+
+
+<style>
+/* latin-ext */
+@font-face {
+  font-family: 'DM Sans';
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/dmsans/v17/rP2Wp2ywxg089UriCZaSExdy3sGt9zz86D3wyKK58UfivUw4aw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'DM Sans';
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/dmsans/v17/rP2Wp2ywxg089UriCZaSExdy3sGt9zz86D3wyKy58UfivUw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+</style>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f2f2f7;
+  --surface: #ffffff;
+  --surface-2: #f2f2f7;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.14);
+  --blue: #21D081;
+  --blue-light: rgba(33,208,129,0.1);
+  --blue-mid: rgba(33,208,129,0.18);
+  --nav: #15A463;
+  --text: #000000;
+  --text-secondary: #3c3c43;
+  --text-tertiary: #8e8e93;
+  --text-quaternary: #aeaeb2;
+  --green: #34C759;
+  --red: #FF3B30;
+  --font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-card: 18px;
+  --radius-btn: 15px;
+  --radius-pill: 100px;
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-elevated: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+}
+
+html, body {
+  width: 100%; height: 100%;
+  background: #1c1c1e;
+  font-family: var(--font);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── PHONE SHELL ── */
+.phone-shell {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at 40% 60%, #2c2c2e 0%, #1c1c1e 100%);
+}
+
+.phone {
+  width: 390px; height: 844px;
+  background: #ffffff;
+  border-radius: 56px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.15),
+    0 0 0 10px #1c1c1e,
+    0 0 0 11px rgba(255,255,255,0.08),
+    0 40px 100px rgba(0,0,0,0.8);
+}
+
+/* Dynamic island */
+.dynamic-island {
+  position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+  width: 120px; height: 34px;
+  background: #000;
+  border-radius: 100px;
+  z-index: 999;
+}
+
+/* Status bar */
+.status-bar {
+  height: 59px; padding: 18px 28px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  position: absolute; top: 0; left: 0; right: 0;
+  z-index: 10;
+}
+.status-time { font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+.status-icons { display: flex; gap: 7px; align-items: center; }
+.status-icons svg { width: 17px; height: 17px; }
+
+/* ── BOTTOM SHEET OVERLAY ── */
+.sheet-overlay {
+  position: absolute; inset: 0;
+  z-index: 100;
+  display: flex; align-items: flex-end;
+  pointer-events: none;
+}
+.sheet-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0);
+  transition: background 0.45s cubic-bezier(0.4,0,0.2,1);
+  pointer-events: none;
+}
+.sheet-overlay.open .sheet-backdrop {
+  background: rgba(0,0,0,0.35);
+  pointer-events: all;
+}
+.bottom-sheet {
+  width: 100%;
+  background: var(--surface);
+  border-radius: 24px 24px 0 0;
+  position: relative; z-index: 1;
+  transform: translateY(100%);
+  transition: transform 0.5s cubic-bezier(0.32,0.72,0,1);
+  pointer-events: all;
+  /* Sheet height = everything except status bar area */
+  height: calc(100% - 59px);
+  display: flex; flex-direction: column;
+  box-shadow: 0 -4px 30px rgba(0,0,0,0.1);
+}
+.sheet-overlay.open .bottom-sheet { transform: translateY(0); }
+
+.sheet-handle-wrap { padding: 10px 0 4px; flex-shrink: 0; }
+.sheet-handle { width: 36px; height: 5px; background: rgba(0,0,0,0.16); border-radius: 3px; margin: 0 auto; }
+
+/* ── SCREENS inside the sheet ── */
+.sheet-steps { flex: 1; overflow: hidden; position: relative; min-height: 0; }
+
+.screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  transform: translateX(30px) scale(0.98);
+  will-change: opacity, transform;
+}
+.screen.active {
+  opacity: 1; pointer-events: all;
+  transform: translateX(0) scale(1);
+}
+.screen.exit {
+  opacity: 0;
+  transform: translateX(-30px) scale(0.98);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* ══ WELCOME ══ */
+#screen-welcome {
+  background: var(--surface);
+  justify-content: space-between;
+}
+
+.welcome-visual {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+  position: relative;
+}
+
+.car-illustration { width: 280px; height: 160px; position: relative; }
+.car-svg { width: 100%; height: 100%; filter: drop-shadow(0 20px 40px rgba(33,208,129,0.15)); }
+
+.welcome-text {
+  padding: 0 32px 40px;
+  text-align: center;
+}
+.welcome-headline {
+  font-size: 34px; font-weight: 700; letter-spacing: -0.8px;
+  color: var(--text); line-height: 1.1; margin-bottom: 12px;
+}
+.welcome-sub {
+  font-size: 16px; color: var(--text-secondary); line-height: 1.5;
+  font-weight: 400; margin-bottom: 28px;
+}
+.welcome-sub em { font-style: normal; color: var(--blue); }
+
+.btn-continue {
+  width: 100%; padding: 17px;
+  background: var(--blue);
+  color: #000; border: none;
+  border-radius: var(--radius-btn);
+  font-family: var(--font); font-size: 17px; font-weight: 600;
+  cursor: pointer; letter-spacing: -0.2px;
+  transition: opacity 0.12s, transform 0.12s;
+  box-shadow: 0 4px 16px rgba(33,208,129,0.3);
+}
+.btn-continue:active { opacity: 0.8; transform: scale(0.98); }
+.btn-continue.disabled { background: var(--text-quaternary); box-shadow: none; pointer-events: none; }
+
+.btn-ghost {
+  width: 100%; padding: 14px;
+  background: none; border: none;
+  color: var(--nav); font-family: var(--font); font-size: 17px; font-weight: 500;
+  cursor: pointer; margin-top: 8px;
+}
+.btn-ghost:active { opacity: 0.5; }
+
+/* ══ STANDARD SCREEN ══ */
+.std-screen { background: var(--surface); }
+
+.top-bar {
+  padding: 16px 20px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface);
+  position: relative; z-index: 10;
+}
+.back-btn {
+  display: flex; align-items: center; gap: 4px;
+  color: var(--nav); font-size: 17px; font-weight: 400;
+  cursor: pointer; padding: 4px 0;
+  background: none; border: none; font-family: var(--font);
+}
+.back-btn svg { width: 10px; height: 18px; stroke: var(--nav); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.back-btn:active { opacity: 0.5; }
+
+/* Dot progress */
+.dot-progress {
+  display: flex; gap: 6px; align-items: center;
+  position: absolute; left: 50%; transform: translateX(-50%);
+}
+.dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--text-quaternary);
+  transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.dot.active { width: 20px; border-radius: 3px; background: var(--nav); }
+.dot.done { background: var(--nav); opacity: 0.35; }
+
+.std-skip {
+  color: var(--nav); font-size: 17px; font-weight: 400;
+  cursor: pointer; padding: 4px 0; background: none; border: none; font-family: var(--font);
+}
+.std-skip:active { opacity: 0.5; }
+
+.screen-content {
+  flex: 1; overflow-y: auto; padding: 28px 20px 16px;
+  background: var(--surface);
+}
+.screen-content::-webkit-scrollbar { display: none; }
+
+.screen-label {
+  font-size: 13px; font-weight: 600; letter-spacing: 0.4px;
+  text-transform: uppercase; color: var(--text-tertiary);
+  margin-bottom: 8px;
+}
+.screen-title {
+  font-size: 34px; font-weight: 700; letter-spacing: -0.8px;
+  color: var(--text); line-height: 1.1; margin-bottom: 10px;
+}
+.screen-body {
+  font-size: 17px; color: var(--text-secondary); line-height: 1.5;
+  font-weight: 400; margin-bottom: 28px;
+}
+
+.bottom-bar {
+  padding: 12px 20px 40px;
+  background: var(--surface);
+}
+
+/* ══ INTENT CARDS ══ */
+.intent-list { display: flex; flex-direction: column; gap: 12px; }
+.intent-item {
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  padding: 18px 20px;
+  display: flex; align-items: center; gap: 16px;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.15s cubic-bezier(0.34,1.2,0.64,1), box-shadow 0.15s;
+  position: relative; overflow: hidden;
+  border: 2px solid transparent;
+}
+.intent-item:active { transform: scale(0.975); }
+.intent-item.selected {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 0 transparent, 0 4px 20px rgba(33,208,129,0.12);
+}
+.intent-icon-wrap {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; flex-shrink: 0;
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.intent-item.selected .intent-icon-wrap { transform: scale(1.08); }
+.intent-item-text { flex: 1; }
+.intent-item-label { font-size: 17px; font-weight: 600; color: var(--text); letter-spacing: -0.2px; margin-bottom: 3px; }
+.intent-item-desc { font-size: 14px; color: var(--text-tertiary); font-weight: 400; }
+.check-circle {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  background: transparent;
+}
+.intent-item.selected .check-circle {
+  background: var(--blue); border-color: var(--blue);
+  transform: scale(1.05);
+}
+.check-circle svg { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity 0.15s 0.05s; }
+.intent-item.selected .check-circle svg { opacity: 1; }
+
+.bg-blue { background: rgba(142,142,147,0.18); }
+.bg-green { background: rgba(142,142,147,0.18); }
+.bg-orange { background: rgba(142,142,147,0.18); }
+.bg-purple { background: rgba(142,142,147,0.18); }
+
+/* ══ GARAGE ══ */
+.garage-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+.car-row {
+  background: var(--surface); border-radius: var(--radius-card);
+  padding: 14px 16px; display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow-card);
+  animation: springIn 0.4s cubic-bezier(0.34,1.4,0.64,1);
+}
+@keyframes springIn { from { opacity:0; transform: translateY(16px) scale(0.95); } to { opacity:1; transform: none; } }
+.car-row-icon { font-size: 32px; flex-shrink: 0; }
+.car-row-text { flex: 1; }
+.car-row-text strong { display: block; font-size: 17px; font-weight: 600; color: var(--text); letter-spacing: -0.2px; }
+.car-row-text span { font-size: 14px; color: var(--text-tertiary); }
+.car-row-delete {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(255,59,48,0.1); border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+  color: var(--red);
+}
+.car-row-delete:active { background: rgba(255,59,48,0.2); transform: scale(0.9); }
+.car-row-delete svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+.add-row {
+  background: var(--surface); border-radius: var(--radius-card);
+  padding: 14px 16px; display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow-card); cursor: pointer;
+  transition: opacity 0.1s;
+}
+.add-row:active { opacity: 0.6; }
+.add-icon {
+  width: 42px; height: 42px; border-radius: 11px;
+  background: var(--blue-light); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.add-icon svg { width: 20px; height: 20px; stroke: var(--nav); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.add-row-text strong { display: block; font-size: 17px; font-weight: 500; color: var(--nav); letter-spacing: -0.2px; }
+.add-row-text span { font-size: 14px; color: var(--text-tertiary); }
+
+/* ══ INTERESTS ══ */
+.tag-wrap { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 28px; }
+.tag {
+  padding: 9px 16px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: 15px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34,1.3,0.64,1);
+  box-shadow: var(--shadow-card);
+  display: flex; align-items: center; gap: 6px;
+  user-select: none;
+}
+.tag.selected {
+  background: var(--blue-light);
+  border-color: var(--blue);
+  color: var(--nav);
+  transform: scale(1.04);
+  box-shadow: 0 2px 12px rgba(33,208,129,0.15);
+}
+.tag:active { transform: scale(0.95); }
+.tag-emoji { font-size: 16px; }
+
+.section-divider { height: 1px; background: var(--border); margin: 24px 0; }
+.section-mini-label { font-size: 13px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 12px; }
+
+.search-row-item {
+  background: var(--surface); border-radius: var(--radius-card);
+  padding: 14px 16px; display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow-card); margin-bottom: 10px;
+  animation: springIn 0.4s cubic-bezier(0.34,1.4,0.64,1);
+}
+.search-badge {
+  width: 42px; height: 42px; border-radius: 11px;
+  background: var(--blue-light); display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.search-row-text { flex: 1; }
+.search-row-text strong { display: block; font-size: 16px; font-weight: 600; color: var(--text); }
+.search-row-text span { font-size: 13px; color: var(--text-tertiary); }
+.notif-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+/* ══ NOTIFICATIONS ══ */
+.notif-card {
+  background: var(--surface); border-radius: var(--radius-card);
+  overflow: hidden; box-shadow: var(--shadow-card); margin-bottom: 16px;
+}
+.notif-cell {
+  padding: 16px 18px; display: flex; align-items: center; gap: 14px;
+  border-bottom: 1px solid var(--border); cursor: pointer;
+  transition: background 0.1s;
+}
+.notif-cell:last-child { border-bottom: none; }
+.notif-cell:active { background: var(--surface-2); }
+.notif-cell-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 19px; flex-shrink: 0;
+}
+.notif-cell-text { flex: 1; }
+.notif-cell-text strong { display: block; font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.notif-cell-text span { font-size: 13px; color: var(--text-tertiary); }
+
+.ios-toggle {
+  width: 51px; height: 31px; border-radius: 16px;
+  background: #e5e5ea; position: relative; cursor: pointer;
+  transition: background 0.25s cubic-bezier(0.4,0,0.2,1);
+  flex-shrink: 0; border: none;
+}
+.ios-toggle.on { background: var(--green); }
+.ios-toggle::after {
+  content: ''; position: absolute;
+  top: 2px; left: 2px;
+  width: 27px; height: 27px; border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25), 0 1px 2px rgba(0,0,0,0.15);
+  transition: transform 0.28s cubic-bezier(0.34,1.4,0.64,1);
+}
+.ios-toggle.on::after { transform: translateX(20px); }
+
+.footer-note {
+  background: var(--surface); border-radius: var(--radius-card);
+  padding: 14px 16px;
+  font-size: 13px; color: var(--text-tertiary); line-height: 1.5;
+  box-shadow: var(--shadow-card);
+}
+
+/* ══ SUCCESS ══ */
+#screen-done {
+  background: var(--surface);
+  justify-content: center; align-items: center;
+  text-align: center; padding: 48px 32px;
+}
+.success-icon {
+  font-size: 92px;
+  margin: 0 auto 28px;
+  display: block;
+  line-height: 1;
+  animation: successPop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  opacity: 0;
+}
+@keyframes successPop { 0% { opacity:0; transform:scale(0.4) rotate(-8deg); } 100% { opacity:1; transform:scale(1) rotate(0deg); } }
+.success-title { font-size: 34px; font-weight: 700; letter-spacing: -0.8px; color: var(--text); margin-bottom: 10px; }
+.success-sub { font-size: 17px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 40px; }
+
+.stats-row { display: flex; gap: 10px; margin-bottom: 40px; width: 100%; }
+.stat-box { flex: 1; background: var(--bg); border-radius: 16px; padding: 16px 12px; }
+.stat-box-num { font-size: 32px; font-weight: 700; color: var(--blue); letter-spacing: -1px; display: block; }
+.stat-box-label { font-size: 12px; color: var(--text-tertiary); margin-top: 3px; line-height: 1.3; }
+
+/* ══ MODAL ══ */
+.modal-overlay {
+  position: absolute; inset: 0; z-index: 200;
+  display: flex; align-items: flex-end;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.modal-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-sheet {
+  width: 100%; background: var(--bg);
+  border-radius: 28px 28px 0 0;
+  padding: 0 0 40px;
+  position: relative; z-index: 1;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  max-height: 88%;
+  overflow-y: auto;
+}
+.modal-sheet::-webkit-scrollbar { display: none; }
+.modal-overlay.open .modal-sheet { transform: translateY(0); }
+.modal-handle { width: 36px; height: 5px; background: rgba(0,0,0,0.18); border-radius: 3px; margin: 12px auto 20px; }
+
+.modal-header { padding: 0 20px 20px; border-bottom: 1px solid var(--border); }
+.modal-title { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.4px; margin-bottom: 4px; }
+.modal-sub { font-size: 15px; color: var(--text-tertiary); }
+
+.modal-section { padding: 20px 20px 0; }
+.modal-section-label { font-size: 13px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 10px; padding-left: 4px; }
+
+.modal-input-wrap {
+  background: var(--surface); border-radius: 12px;
+  padding: 0 14px; display: flex; align-items: center; gap: 10px;
+  box-shadow: var(--shadow-card);
+}
+.modal-input-wrap svg { width: 17px; height: 17px; stroke: var(--text-tertiary); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.modal-input { flex: 1; background: none; border: none; outline: none; padding: 14px 0; font-family: var(--font); font-size: 17px; color: var(--text); }
+.modal-input::placeholder { color: var(--text-quaternary); }
+
+.make-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.make-chip {
+  padding: 12px 8px; background: var(--surface);
+  border-radius: 12px; text-align: center;
+  font-size: 14px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; transition: all 0.15s cubic-bezier(0.34,1.2,0.64,1);
+  box-shadow: var(--shadow-card); border: 1.5px solid transparent;
+  user-select: none;
+}
+.make-chip.selected { border-color: var(--blue); background: var(--blue-light); color: var(--nav); }
+.make-chip:active { transform: scale(0.94); }
+
+.budget-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.budget-chip {
+  padding: 13px 10px; background: var(--surface);
+  border-radius: 12px; text-align: center;
+  font-size: 14px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; transition: all 0.15s cubic-bezier(0.34,1.2,0.64,1);
+  box-shadow: var(--shadow-card); border: 1.5px solid transparent;
+}
+.budget-chip.selected { border-color: var(--blue); background: var(--blue-light); color: var(--nav); }
+.budget-chip:active { transform: scale(0.96); }
+
+.modal-btn {
+  margin: 24px 20px 0; width: calc(100% - 40px);
+  padding: 17px; background: var(--blue); color: #000; border: none;
+  border-radius: var(--radius-btn);
+  font-family: var(--font); font-size: 17px; font-weight: 600;
+  cursor: pointer; letter-spacing: -0.2px;
+  transition: opacity 0.12s, transform 0.12s;
+  box-shadow: 0 4px 16px rgba(33,208,129,0.3);
+}
+.modal-btn:active { opacity: 0.8; transform: scale(0.98); }
+
+@media (max-height: 900px) { .phone { transform: scale(0.88); transform-origin: center; } }
+@media (max-height: 780px) { .phone { transform: scale(0.78); } }
+@media (max-width: 420px) { .phone { width: 100%; height: 100%; border-radius: 0; } .phone-shell { background: #fff; } }
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="logo"><svg viewBox="0 0 132 21" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="0" y="17" font-family="SF Pro, system-ui, sans-serif" font-size="20" font-weight="700" fill="white">Cars</text><text x="50" y="17" font-family="SF Pro, system-ui, sans-serif" font-size="20" font-weight="700" fill="#4AD493">&</text><text x="65" y="17" font-family="SF Pro, system-ui, sans-serif" font-size="20" font-weight="700" fill="white">Bids</text></svg></div>
-            <div class="header-actions">
-                <button class="header-btn">
-                    <img src="https://www.figma.com/api/mcp/asset/e8fe601a-1c3d-46e9-b6fb-44da90a6472f" alt="Search">
-                </button>
-                <button class="header-btn">
-                    <img src="https://www.figma.com/api/mcp/asset/80c06476-d942-41bb-86e5-e8808b734b92" alt="Notifications">
-                    <div class="notif-badge">30</div>
-                </button>
-                <img class="hamburger" src="https://www.figma.com/api/mcp/asset/ac263abd-a4b7-40aa-8ff4-13e9bfbb1a02" alt="Menu">
-            </div>
-        </div>
+<div class="phone-shell">
+<div class="phone">
+  <div class="dynamic-island"></div>
 
-        <!-- Content -->
-        <div class="content">
-            <!-- Page Title -->
-            <h1 class="page-title">Jaguar</h1>
-
-            <!-- Model Pills -->
-            <div class="model-pills">
-                <div class="model-pill">XKR</div>
-                <div class="model-pill">F-Type</div>
-                <div class="model-pill">XJR</div>
-                <div class="model-pill">XJ</div>
-                <div class="model-pill">XK8</div>
-                <div class="model-pill">XJS</div>
-                <div class="model-pill">XK</div>
-            </div>
-
-            <!-- Filter Pills -->
-            <div class="filter-pills">
-                <button class="filter-pill">Years</button>
-                <button class="filter-pill">Transmission</button>
-                <button class="filter-pill">Body Style</button>
-            </div>
-
-            <!-- Save Button -->
-            <button class="save-button" onclick="openModal()">
-                <img src="https://www.figma.com/api/mcp/asset/8c289799-0e68-46a4-a733-4776c4e332d2" alt="Bell icon">
-                Save Search & Notify Me
-            </button>
-
-            <!-- Auction Header -->
-            <div class="auction-header">
-                <h2 class="auction-title">Jaguar Auctions (5)</h2>
-                <div class="sort-tabs">
-                    <div class="sort-tab active">Ending soon</div>
-                    <div class="sort-tab inactive">Newly listed</div>
-                    <div class="sort-tab inactive">No reserve</div>
-                    <div class="sort-tab inactive">Lowest mileage</div>
-                    <div class="sort-tab inactive">Closest to me</div>
-                </div>
-            </div>
-
-            <!-- Auction Cards -->
-            <div class="auction-cards">
-                <!-- Card 1 -->
-                <div class="auction-card">
-                    <img class="auction-image" src="https://www.figma.com/api/mcp/asset/f845a1ee-8b09-4a5c-9ba1-668049b1a1fd" alt="2014 Jaguar XJL Portfolio">
-                    <div class="bid-bar">
-                        <img class="bid-icon" src="https://www.figma.com/api/mcp/asset/06bca96a-8bfb-4f26-b38b-3e97f5efc8fb" alt="Clock">
-                        <span class="bid-time">2 Days</span>
-                        <span class="bid-label">Bid</span>
-                        <span class="bid-amount">$13,400</span>
-                    </div>
-                    <button class="watch-button">☆</button>
-                    <div class="auction-title-text">2014 Jaguar XJL Portfolio</div>
-                    <div class="auction-description">Supercharged V6, Long Wheelbase, Highly Equipped, California-Owned</div>
-                    <div class="auction-location">Los Angeles, CA 90065</div>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="auction-card">
-                    <img class="auction-image" src="https://www.figma.com/api/mcp/asset/39388c7b-7cca-4e98-85f7-f3944979b4d8" alt="2015 Jaguar F-Type R Coupe">
-                    <div class="bid-bar">
-                        <img class="bid-icon" src="https://www.figma.com/api/mcp/asset/06bca96a-8bfb-4f26-b38b-3e97f5efc8fb" alt="Clock">
-                        <span class="bid-time">2 Days</span>
-                        <span class="bid-label">Bid</span>
-                        <span class="bid-amount">$13,400</span>
-                    </div>
-                    <button class="watch-button">☆</button>
-                    <div class="auction-title-text">2015 Jaguar F-Type R Coupe</div>
-                    <div class="auction-description">2 Owners, 550-hp Supercharged V8, California-Owned</div>
-                    <div class="auction-location">Porterville, CA 93257</div>
-                </div>
-            </div>
-        </div>
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M1.5 8.5C5.5 4.5 18.5 4.5 22.5 8.5" stroke="#000" stroke-width="2" stroke-linecap="round"></path><path d="M5 12c2.7-2.7 12-2.7 14 0" stroke="#000" stroke-width="2" stroke-linecap="round"></path><path d="M8.5 15.5C9.8 14.2 14.2 14.2 15.5 15.5" stroke="#000" stroke-width="2" stroke-linecap="round"></path><circle cx="12" cy="19" r="1.2" fill="#000"></circle></svg>
+      <svg viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#000" stroke-opacity="0.35"></rect><rect x="1" y="1" width="17" height="10" rx="3" fill="#000"></rect><path d="M23 4v4a2 2 0 000-4z" fill="#000" fill-opacity="0.4"></path></svg>
     </div>
+  </div>
 
-    <!-- Scroll-Triggered Bottom Sheet Modal -->
-    <div class="modal-overlay" id="scrollModalOverlay">
-        <div class="bottom-sheet">
-            <button class="sheet-close" onclick="closeScrollModal()">✕</button>
-            
-            <div class="sheet-icon">
-                <img src="https://www.figma.com/api/mcp/asset/e394e12c-6abb-40b2-ae41-522b24dcc5fa" alt="Bell icon">
-            </div>
+  <!-- ════════════════════════════
+       BOTTOM SHEET
+  ════════════════════════════ -->
+  <div class="sheet-overlay open" id="sheet-overlay">
+    <div class="sheet-backdrop"></div>
 
-            <h2 class="sheet-title">Save Search</h2>
+    <div class="bottom-sheet">
+      <div class="sheet-handle-wrap"><div class="sheet-handle"></div></div>
 
-            <div class="info-box">
-                <div class="info-pill">Jaguar</div>
-                <p class="info-text">Be the first to know!<br>Get notified when new Jaguars go live.</p>
-            </div>
+      <div class="sheet-steps">
 
-            <div class="notification-options">
-                <div class="notification-row">
-                    <span class="notification-label">Email me when new auctions go live</span>
-                    <div class="toggle on" id="scrollEmailToggle" onclick="toggleSwitch('scrollEmailToggle')">
-                        <div class="toggle-slider"></div>
-                        <span class="toggle-text">On</span>
-                    </div>
-                </div>
-                <div class="notification-row">
-                    <span class="notification-label">Text me when new auctions go live</span>
-                    <div class="toggle off" id="scrollTextToggle" onclick="toggleSwitch('scrollTextToggle')">
-                        <div class="toggle-slider"></div>
-                        <span class="toggle-text">Off</span>
-                    </div>
-                </div>
-            </div>
-
-            <button class="save-button" id="scrollSaveBtn" onclick="handleScrollSave()">
-                <img src="https://www.figma.com/api/mcp/asset/52854cb2-97c5-4307-8bf2-4061a1371903" alt="Bell icon">
-                <span id="scrollBtnText">Save Search & Notify Me</span>
-            </button>
-
-            <p class="watch-list-note">You can change this later in your <a href="#">Watch List</a></p>
+        <!-- ══════════ WELCOME ══════════ -->
+        <div class="screen active" id="screen-welcome">
+          <div class="welcome-visual">
+            <svg width="160" height="160" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 20px 40px rgba(33,208,129,0.25))">
+              <g clip-path="url(#clip0_33_174)">
+                <rect width="256" height="256" rx="128" fill="#21D081"/>
+                <path d="M213.412 130.222C213.412 122.306 206.992 115.886 199.076 115.886H56.9193C49.0033 115.886 42.5833 122.306 42.5833 130.222V160.84H31.8313V130.222C31.8313 116.368 43.0651 105.134 56.9193 105.134H199.076C212.93 105.134 224.164 116.368 224.164 130.222V160.865H213.412V130.222Z" fill="#171717"/>
+                <path d="M171.238 165.581V176.333H84.8125V165.581H171.238Z" fill="#171717"/>
+                <path d="M213.412 160.86C213.412 149.887 204.519 140.995 193.547 140.995C182.574 140.995 173.681 149.887 173.681 160.86C173.681 171.833 182.574 180.725 193.547 180.726C204.515 180.726 213.412 171.832 213.412 160.86ZM224.164 160.86C224.164 177.772 210.452 191.478 193.547 191.478C176.636 191.477 162.929 177.771 162.929 160.86C162.929 143.949 176.636 130.243 193.547 130.243C210.458 130.243 224.164 143.949 224.164 160.86Z" fill="#171717"/>
+                <path d="M82.3094 160.84C82.3094 149.866 73.4157 140.974 62.4489 140.974C51.4821 140.974 42.5885 149.866 42.5884 160.84C42.5884 171.813 51.4821 180.705 62.4489 180.705C73.4158 180.705 82.3094 171.813 82.3094 160.84ZM93.0614 160.84C93.0614 177.75 79.3553 191.457 62.4489 191.457C45.5425 191.457 31.8364 177.75 31.8364 160.84C31.8365 143.929 45.5425 130.222 62.4489 130.222C79.3553 130.222 93.0614 143.929 93.0614 160.84Z" fill="#171717"/>
+                <path d="M126.433 64.5222C134.692 64.5222 142.31 68.933 146.428 76.0662L146.622 76.4077L146.623 76.4097L165.137 109.792L155.734 115.007L137.22 81.6242C135.044 77.7055 130.914 75.2742 126.433 75.2742H72.5213L61.3458 113.894L51.0178 110.905L64.4393 64.5222H126.433Z" fill="#171717"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_33_174">
+                  <rect width="256" height="256" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+          </div>
+          <div class="welcome-text">
+            <h1 class="welcome-headline">The cars you love,<br>curated for you.</h1>
+            <p class="welcome-sub">Tell us what you drive, what you love, and what you're looking for. We'll do the rest — matching you with the right cars at the right moment.</p>
+            <button class="btn-continue" onclick="goTo(&#39;screen-intent&#39;)">Get Started</button>
+            <button class="btn-ghost" onclick="goTo(&#39;screen-done&#39;)">Skip</button>
+          </div>
         </div>
-    </div>
 
-    <!-- Bottom Sheet Modal -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="bottom-sheet">
-            <button class="sheet-close" onclick="closeModal()">✕</button>
-            
-            <div class="sheet-icon">
-                <img src="https://www.figma.com/api/mcp/asset/522fd130-3cfc-4f85-a374-90f5f17d16fa" alt="Bell icon">
+        <!-- ══════════ SCREEN 2: INTENT ══════════ -->
+        <div class="screen std-screen" id="screen-intent">
+          <div class="top-bar">
+            <button class="back-btn" onclick="goBack()"><svg viewBox="0 0 10 18"><polyline points="9 1 1 9 9 17"></polyline></svg>Back</button>
+            <div class="dot-progress">
+              <div class="dot active"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
             </div>
-
-            <h2 class="sheet-title">Search Saved</h2>
-
-            <div class="info-box">
-                <div class="info-pill">Jaguar</div>
-                <p class="info-text">This search has been saved to your watchlist. You can configure your notifications below.</p>
-            </div>
-
-            <div class="notification-options">
-                <div class="notification-row">
-                    <span class="notification-label">Email me when new auctions go live</span>
-                    <div class="toggle on" id="emailToggle" onclick="toggleSwitch('emailToggle')">
-                        <div class="toggle-slider"></div>
-                        <span class="toggle-text">On</span>
-                    </div>
+            <button class="std-skip" onclick="goTo(&#39;screen-garage&#39;)">Skip</button>
+          </div>
+          <div class="screen-content">
+            <p class="screen-label">Step 1 of 4</p>
+            <h2 class="screen-title">What brings you to Cars &amp; Bids?</h2>
+            <p class="screen-body">Select all that apply.</p>
+            <div class="intent-list">
+              <div class="intent-item" onclick="toggleIntent(this)">
+                <div class="intent-icon-wrap bg-blue"><span>🏆</span></div>
+                <div class="intent-item-text">
+                  <div class="intent-item-label">I'm buying</div>
+                  <div class="intent-item-desc">Looking for my next car at auction</div>
                 </div>
-                <div class="notification-row">
-                    <span class="notification-label">Text me when new auctions go live</span>
-                    <div class="toggle off" id="textToggle" onclick="toggleSwitch('textToggle')">
-                        <div class="toggle-slider"></div>
-                        <span class="toggle-text">Off</span>
-                    </div>
+                <div class="check-circle"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+              </div>
+              <div class="intent-item" onclick="toggleIntent(this)">
+                <div class="intent-icon-wrap bg-green"><span>💰</span></div>
+                <div class="intent-item-text">
+                  <div class="intent-item-label">I'm selling</div>
+                  <div class="intent-item-desc">I have a car worth auctioning</div>
                 </div>
+                <div class="check-circle"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+              </div>
+              <div class="intent-item" onclick="toggleIntent(this)">
+                <div class="intent-icon-wrap bg-orange"><span>📺</span></div>
+                <div class="intent-item-text">
+                  <div class="intent-item-label">Just browsing</div>
+                  <div class="intent-item-desc">I love cars and great content</div>
+                </div>
+                <div class="check-circle"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+              </div>
+              <div class="intent-item" onclick="toggleIntent(this)">
+                <div class="intent-icon-wrap bg-purple"><span>🔍</span></div>
+                <div class="intent-item-text">
+                  <div class="intent-item-label">Researching</div>
+                  <div class="intent-item-desc">Tracking values, trends, and history</div>
+                </div>
+                <div class="check-circle"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+              </div>
             </div>
-
-            <button class="done-button" onclick="closeModal()">Done</button>
-
-            <p class="watch-list-note">You can change this later in your <a href="#">Watch List</a></p>
+          </div>
+          <div class="bottom-bar">
+            <button class="btn-continue" onclick="goTo(&#39;screen-garage&#39;)">Continue</button>
+          </div>
         </div>
+
+        <!-- ══════════ SCREEN 3: GARAGE ══════════ -->
+        <div class="screen std-screen" id="screen-garage">
+          <div class="top-bar">
+            <button class="back-btn" onclick="goBack()"><svg viewBox="0 0 10 18"><polyline points="9 1 1 9 9 17"></polyline></svg>Back</button>
+            <div class="dot-progress">
+              <div class="dot done"></div>
+              <div class="dot active"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+            <button class="std-skip" onclick="goTo(&#39;screen-interests&#39;)">Skip</button>
+          </div>
+          <div class="screen-content">
+            <p class="screen-label">Step 2 of 4</p>
+            <h2 class="screen-title">What's in your garage?</h2>
+            <p class="screen-body">Add the cars you own. We'll track market value and let you know when it's a great time to sell.</p>
+            <div class="garage-list" id="garage-list"></div>
+            <div class="add-row" onclick="openModal(&#39;garage-modal&#39;)">
+              <div class="add-icon">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              </div>
+              <div class="add-row-text">
+                <strong>Add a car</strong>
+                <span>Year, make, and model</span>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-bar">
+            <button class="btn-continue" onclick="goTo(&#39;screen-interests&#39;)">Continue</button>
+          </div>
+        </div>
+
+        <!-- ══════════ SCREEN 4: INTERESTS ══════════ -->
+        <div class="screen std-screen" id="screen-interests">
+          <div class="top-bar">
+            <button class="back-btn" onclick="goBack()"><svg viewBox="0 0 10 18"><polyline points="9 1 1 9 9 17"></polyline></svg>Back</button>
+            <div class="dot-progress">
+              <div class="dot done"></div>
+              <div class="dot done"></div>
+              <div class="dot active"></div>
+              <div class="dot"></div>
+            </div>
+            <button class="std-skip" onclick="goTo(&#39;screen-notify&#39;)">Skip</button>
+          </div>
+          <div class="screen-content">
+            <p class="screen-label">Step 3 of 4</p>
+            <h2 class="screen-title">What are you into?</h2>
+            <p class="screen-body">Select your interests and we'll surface listings you'll actually care about.</p>
+
+            <div class="tag-wrap">
+              <div class="tag" onclick="toggleTag(this)"><span class="tag-emoji">🇯🇵</span>JDM</div>
+              <div class="tag" onclick="toggleTag(this)"><span class="tag-emoji">🏁</span>Track Cars</div>
+              <div class="tag" onclick="toggleTag(this)"><span class="tag-emoji">🇩🇪</span>German Marques</div>
+              <div class="tag" onclick="toggleTag(this)"><span class="tag-emoji">🇮🇹</span>Italian Exotics</div>
+              <div class="tag" onclick="toggleTag(this)"><span class="tag-emoji">🇺🇸</span>American Muscle</div>
+              <div class="tag" onclick="toggleTag(this)"><span class="tag-emoji">🏜️</span>Trucks &amp; Off-Road</div>
+              <div class="tag" onclick="toggleTag(this)"><span class="tag-emoji">⚡</span>EVs</div>
+              <div class="tag" onclick="toggleTag(this)"><span class="tag-emoji">🔧</span>Project Cars</div>
+              <div class="tag" onclick="toggleTag(this)"><span class="tag-emoji">🏖️</span>Weekend Toys</div>
+            </div>
+
+            <div class="section-divider"></div>
+            <p class="section-mini-label">Saved Searches</p>
+
+            <div id="search-list"></div>
+
+            <div class="add-row" onclick="openModal(&#39;search-modal&#39;)">
+              <div class="add-icon">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+              </div>
+              <div class="add-row-text">
+                <strong>Add a search</strong>
+                <span>Get notified when a match hits auction</span>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-bar">
+            <button class="btn-continue" onclick="goTo(&#39;screen-notify&#39;)">Continue</button>
+          </div>
+        </div>
+
+        <!-- ══════════ SCREEN 5: NOTIFICATIONS ══════════ -->
+        <div class="screen std-screen" id="screen-notify">
+          <div class="top-bar">
+            <button class="back-btn" onclick="goBack()"><svg viewBox="0 0 10 18"><polyline points="9 1 1 9 9 17"></polyline></svg>Back</button>
+            <div class="dot-progress">
+              <div class="dot done"></div>
+              <div class="dot done"></div>
+              <div class="dot done"></div>
+              <div class="dot active"></div>
+            </div>
+            <div style="width:60px"></div>
+          </div>
+          <div class="screen-content">
+            <p class="screen-label">Step 4 of 4</p>
+            <h2 class="screen-title">Stay in the know.</h2>
+            <p class="screen-body">Auctions end fast. Choose how you want us to reach you.</p>
+
+            <div class="notif-card">
+              <div class="notif-cell" onclick="tapToggle(&#39;t-push&#39;)">
+                <div class="notif-cell-icon" style="background:rgba(255,149,0,0.12)">🔔</div>
+                <div class="notif-cell-text">
+                  <strong>Push Notifications</strong>
+                  <span>Bid updates and ending soon alerts</span>
+                </div>
+                <button class="ios-toggle on" id="t-push" onclick="event.stopPropagation();this.classList.toggle(&#39;on&#39;)"></button>
+              </div>
+              <div class="notif-cell" onclick="tapToggle(&#39;t-email&#39;)">
+                <div class="notif-cell-icon" style="background:rgba(33,208,129,0.12)">✉️</div>
+                <div class="notif-cell-text">
+                  <strong>Email Digest</strong>
+                  <span>Weekly highlights and saved search hits</span>
+                </div>
+                <button class="ios-toggle on" id="t-email" onclick="event.stopPropagation();this.classList.toggle(&#39;on&#39;)"></button>
+              </div>
+              <div class="notif-cell" onclick="tapToggle(&#39;t-sms&#39;)">
+                <div class="notif-cell-icon" style="background:rgba(52,199,89,0.12)">💬</div>
+                <div class="notif-cell-text">
+                  <strong>SMS Alerts</strong>
+                  <span>Last-minute bid notifications only</span>
+                </div>
+                <button class="ios-toggle" id="t-sms" onclick="event.stopPropagation();this.classList.toggle(&#39;on&#39;)"></button>
+              </div>
+            </div>
+
+            <p class="footer-note">
+              Your preferences can be changed any time in Settings. We never share your information with third parties.
+            </p>
+          </div>
+          <div class="bottom-bar">
+            <button class="btn-continue" onclick="goTo(&#39;screen-done&#39;)">Finish Setup</button>
+          </div>
+        </div>
+
+        <!-- ══════════ SUCCESS ══════════ -->
+        <div class="screen" id="screen-done" style="background:var(--surface);justify-content:center;align-items:center;text-align:center;padding:48px 32px;">
+          <div style="width:100%">
+            <div class="success-icon">🏁</div>
+            <h2 class="success-title">You're all set.</h2>
+            <p class="success-sub">We'll surface the listings that match your taste and alert you the moment something great hits the block.</p>
+            <div class="stats-row">
+              <div class="stat-box">
+                <span class="stat-box-num" id="s-garage">0</span>
+                <div class="stat-box-label">Cars in Garage</div>
+              </div>
+              <div class="stat-box">
+                <span class="stat-box-num" id="s-searches">0</span>
+                <div class="stat-box-label">Saved Searches</div>
+              </div>
+              <div class="stat-box">
+                <span class="stat-box-num" id="s-interests">0</span>
+                <div class="stat-box-label">Interests</div>
+              </div>
+            </div>
+            <button class="btn-continue" onclick="closeSheet()">Browse Live Auctions</button>
+            <button class="btn-ghost" onclick="goTo('screen-welcome')">Restart demo</button>
+          </div>
+        </div>
+
+      </div><!-- /sheet-steps -->
+    </div><!-- /bottom-sheet -->
+  </div><!-- /sheet-overlay -->
+
+  <!-- ══════════ MODAL: ADD CAR ══════════ -->
+  <div class="modal-overlay" id="garage-modal" onclick="maybeClose(&#39;garage-modal&#39;, event)">
+    <div class="modal-bg"></div>
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <div class="modal-title">Add a Car</div>
+        <div class="modal-sub">Tell us about one of your vehicles</div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-label">Year</div>
+        <div class="modal-input-wrap">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <input class="modal-input" id="g-year" placeholder="e.g. 2003" type="number">
+        </div>
+      </div>
+      <div class="modal-section" style="margin-top:18px">
+        <div class="modal-section-label">Make</div>
+        <div class="make-grid" id="g-make-grid">
+          <div class="make-chip" onclick="pickMake(this,&#39;g&#39;)">BMW</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;g&#39;)">Porsche</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;g&#39;)">Toyota</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;g&#39;)">Honda</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;g&#39;)">Ford</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;g&#39;)">Chevrolet</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;g&#39;)">Nissan</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;g&#39;)">Mazda</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;g&#39;)">Subaru</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;g&#39;)">Mercedes</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;g&#39;)">Audi</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;g&#39;)">Dodge</div>
+        </div>
+      </div>
+      <div class="modal-section" style="margin-top:18px">
+        <div class="modal-section-label">Model</div>
+        <div class="modal-input-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+          <input class="modal-input" id="g-model" placeholder="e.g. M3, Supra, 911...">
+        </div>
+      </div>
+      <button class="modal-btn" onclick="submitCar()">Add to Garage</button>
     </div>
+  </div>
 
-    <script>
-        let hasShownScrollModal = false;
+  <!-- ══════════ MODAL: SAVED SEARCH ══════════ -->
+  <div class="modal-overlay" id="search-modal" onclick="maybeClose(&#39;search-modal&#39;, event)">
+    <div class="modal-bg"></div>
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <div class="modal-title">New Saved Search</div>
+        <div class="modal-sub">We'll alert you when a match hits auction</div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-label">Make</div>
+        <div class="make-grid" id="s-make-grid">
+          <div class="make-chip" onclick="pickMake(this,&#39;s&#39;)">BMW</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;s&#39;)">Porsche</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;s&#39;)">Toyota</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;s&#39;)">Ferrari</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;s&#39;)">Honda</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;s&#39;)">Ford</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;s&#39;)">Lamborghini</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;s&#39;)">Audi</div>
+          <div class="make-chip" onclick="pickMake(this,&#39;s&#39;)">Any</div>
+        </div>
+      </div>
+      <div class="modal-section" style="margin-top:18px">
+        <div class="modal-section-label">Model (optional)</div>
+        <div class="modal-input-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+          <input class="modal-input" id="s-model" placeholder="e.g. M3, 911, Supra...">
+        </div>
+      </div>
+      <div class="modal-section" style="margin-top:18px">
+        <div class="modal-section-label">Budget (optional)</div>
+        <div class="budget-grid" id="s-budget-grid">
+          <div class="budget-chip" onclick="pickBudget(this)">Under $10k</div>
+          <div class="budget-chip" onclick="pickBudget(this)">$10k – $25k</div>
+          <div class="budget-chip" onclick="pickBudget(this)">$25k – $50k</div>
+          <div class="budget-chip" onclick="pickBudget(this)">$50k+</div>
+        </div>
+      </div>
+      <button class="modal-btn" onclick="submitSearch()">Save Search</button>
+    </div>
+  </div>
 
-        // Detect scroll and show modal when near bottom
-        window.addEventListener('scroll', function() {
-            if (!hasShownScrollModal) {
-                // Check if user has scrolled to near bottom (within 100px of bottom)
-                const scrollPosition = window.scrollY + window.innerHeight;
-                const pageHeight = document.documentElement.scrollHeight;
-                
-                if (scrollPosition >= pageHeight - 100) {
-                    hasShownScrollModal = true;
-                    openScrollModal();
-                }
-            }
-        });
+  <!-- Reopen trigger, shown when sheet is closed -->
+  <button id="reopen-btn" onclick="openSheet()" style="
+    display: none;
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #21D081;
+    color: #000;
+    border: none;
+    border-radius: 100px;
+    padding: 14px 28px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(33,208,129,0.4);
+    letter-spacing: -0.2px;
+    z-index: 50;
+  ">✦ Start Onboarding</button>
 
-        function openScrollModal() {
-            document.getElementById('scrollModalOverlay').classList.add('active');
-        }
+</div><!-- /phone -->
+</div><!-- /phone-shell -->
 
-        function closeScrollModal() {
-            document.getElementById('scrollModalOverlay').classList.remove('active');
-        }
+<script>
+// ── STATE ──
+let currentScreen = 'screen-welcome';
+let history = [];
+let garageCars = [];
+let savedSearches = [];
+let selectedInterests = new Set();
+let gMake = null, sMake = null, sBudget = null;
 
-        function handleScrollSave() {
-            const btn = document.getElementById('scrollSaveBtn');
-            const btnText = document.getElementById('scrollBtnText');
-            
-            // Change button text to "Saved!" with checkmark
-            btnText.textContent = '✓ Saved!';
-            btn.style.pointerEvents = 'none'; // Disable button
-            
-            // Close modal after short delay
-            setTimeout(() => {
-                closeScrollModal();
-                // Reset button for next time
-                setTimeout(() => {
-                    btnText.textContent = 'Save Search & Notify Me';
-                    btn.style.pointerEvents = 'auto';
-                }, 300);
-            }, 1000);
-        }
+const carEmoji = { BMW:'🇩🇪', Porsche:'🏎️', Toyota:'🇯🇵', Honda:'🇯🇵', Ford:'🇺🇸', Chevrolet:'🇺🇸', Nissan:'🇯🇵', Mazda:'🇯🇵', Subaru:'🇯🇵', Mercedes:'🇩🇪', Audi:'🇩🇪', Dodge:'🇺🇸', Ferrari:'🇮🇹', Lamborghini:'🇮🇹', Any:'🔍' };
 
-        function openModal() {
-            document.getElementById('modalOverlay').classList.add('active');
-        }
+// Open sheet on load
+setTimeout(() => document.getElementById('sheet-overlay').classList.add('open'), 600);
 
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('active');
-        }
+function closeSheet() {
+  document.getElementById('sheet-overlay').classList.remove('open');
+  resetAll();
+  // show reopen button after sheet slides out
+  setTimeout(() => {
+    document.getElementById('reopen-btn').style.display = 'block';
+  }, 500);
+}
 
-        function toggleSwitch(id) {
-            const toggle = document.getElementById(id);
-            const isOn = toggle.classList.contains('on');
-            
-            if (isOn) {
-                toggle.classList.remove('on');
-                toggle.classList.add('off');
-                toggle.querySelector('.toggle-text').textContent = 'Off';
-            } else {
-                toggle.classList.remove('off');
-                toggle.classList.add('on');
-                toggle.querySelector('.toggle-text').textContent = 'On';
-            }
-        }
+function openSheet() {
+  document.getElementById('reopen-btn').style.display = 'none';
+  // ensure we start on welcome
+  const all = document.querySelectorAll('.screen');
+  all.forEach(s => s.classList.remove('active', 'exit'));
+  document.getElementById('screen-welcome').classList.add('active');
+  currentScreen = 'screen-welcome';
+  history = [];
+  document.getElementById('sheet-overlay').classList.add('open');
+}
 
-        // Close modals when clicking outside the bottom sheet
-        document.getElementById('modalOverlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
+// ── NAVIGATION ──
+function goTo(id) {
+  if (id === currentScreen) return;
+  const cur = document.getElementById(currentScreen);
+  const nxt = document.getElementById(id);
+  if (!nxt) return;
 
-        document.getElementById('scrollModalOverlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeScrollModal();
-            }
-        });
-    </script>
-</body>
-</html>
+  cur.classList.add('exit');
+  setTimeout(() => cur.classList.remove('active', 'exit'), 320);
+
+  nxt.classList.add('active');
+  history.push(currentScreen);
+  currentScreen = id;
+
+  if (id === 'screen-done') {
+    setTimeout(() => {
+      countUp('s-garage', garageCars.length);
+      countUp('s-searches', savedSearches.length);
+      countUp('s-interests', selectedInterests.size);
+    }, 400);
+  }
+  if (id === 'screen-welcome') resetAll();
+}
+
+function goBack() {
+  if (!history.length) return;
+  const prev = history.pop();
+  const cur = document.getElementById(currentScreen);
+  const prevEl = document.getElementById(prev);
+  cur.style.cssText = 'transition:opacity 0.25s,transform 0.25s;opacity:0;transform:translateX(30px) scale(0.98)';
+  setTimeout(() => { cur.classList.remove('active'); cur.style.cssText = ''; }, 260);
+  prevEl.style.cssText = 'transform:translateX(-20px) scale(0.98);opacity:0';
+  prevEl.classList.add('active');
+  requestAnimationFrame(() => { requestAnimationFrame(() => {
+    prevEl.style.cssText = 'transition:opacity 0.35s,transform 0.35s;opacity:1;transform:translateX(0) scale(1)';
+    setTimeout(() => prevEl.style.cssText = '', 360);
+  }); });
+  currentScreen = prev;
+}
+
+function resetAll() {
+  garageCars = []; savedSearches = []; selectedInterests.clear();
+  document.getElementById('garage-list').innerHTML = '';
+  document.getElementById('search-list').innerHTML = '';
+  document.querySelectorAll('.intent-item').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.tag').forEach(el => el.classList.remove('selected'));
+  history = [];
+}
+
+// ── INTENT ──
+function toggleIntent(el) { el.classList.toggle('selected'); }
+
+// ── TAGS ──
+function toggleTag(el) {
+  el.classList.toggle('selected');
+  const t = el.textContent.trim();
+  selectedInterests[el.classList.contains('selected') ? 'add' : 'delete'](t);
+}
+
+// ── TOGGLES ──
+function tapToggle(id) { document.getElementById(id).classList.toggle('on'); }
+
+// ── MODAL ──
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function maybeClose(id, e) {
+  if (e.target === document.getElementById(id) || e.target.classList.contains('modal-bg')) {
+    document.getElementById(id).classList.remove('open');
+  }
+}
+
+// ── MAKE SELECTION ──
+function pickMake(el, prefix) {
+  const grid = document.getElementById(prefix === 'g' ? 'g-make-grid' : 's-make-grid');
+  grid.querySelectorAll('.make-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  if (prefix === 'g') gMake = el.textContent;
+  else sMake = el.textContent;
+}
+function pickBudget(el) {
+  document.querySelectorAll('.budget-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  sBudget = el.textContent;
+}
+
+// ── GARAGE ──
+function submitCar() {
+  const year = document.getElementById('g-year').value || '—';
+  const make = gMake || 'Unknown';
+  const model = document.getElementById('g-model').value || 'Unknown';
+  const emoji = carEmoji[make] || '🚗';
+  garageCars.push({ year, make, model, emoji });
+  renderGarage();
+  document.getElementById('garage-modal').classList.remove('open');
+  gMake = null;
+  document.getElementById('g-year').value = '';
+  document.getElementById('g-model').value = '';
+  document.querySelectorAll('#g-make-grid .make-chip').forEach(c => c.classList.remove('selected'));
+}
+
+function renderGarage() {
+  document.getElementById('garage-list').innerHTML = garageCars.map((c, i) => `
+    <div class="car-row">
+      <div class="car-row-icon">${c.emoji}</div>
+      <div class="car-row-text">
+        <strong>${c.year} ${c.make} ${c.model}</strong>
+        <span>Your garage</span>
+      </div>
+      <button class="car-row-delete" onclick="removeCar(${i})">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+function removeCar(i) { garageCars.splice(i, 1); renderGarage(); }
+
+// ── SAVED SEARCHES ──
+function submitSearch() {
+  const make = sMake || 'Any';
+  const model = document.getElementById('s-model').value;
+  const budget = sBudget;
+  const emoji = carEmoji[make] || '🔍';
+  const label = model ? `${make} ${model}` : make;
+  savedSearches.push({ label, budget, emoji });
+  renderSearches();
+  document.getElementById('search-modal').classList.remove('open');
+  sMake = null; sBudget = null;
+  document.getElementById('s-model').value = '';
+  document.querySelectorAll('#s-make-grid .make-chip, .budget-chip').forEach(c => c.classList.remove('selected'));
+}
+
+function renderSearches() {
+  document.getElementById('search-list').innerHTML = savedSearches.map((s, i) => `
+    <div class="search-row-item">
+      <div class="search-badge">${s.emoji}</div>
+      <div class="search-row-text">
+        <strong>${s.label}</strong>
+        <span>${s.budget || 'Any price'} · Alerts on</span>
+      </div>
+      <div class="notif-dot"></div>
+    </div>
+  `).join('');
+}
+
+// ── UTIL ──
+function countUp(id, target) {
+  const el = document.getElementById(id);
+  let n = 0;
+  const tick = () => { el.textContent = ++n; if (n < target) requestAnimationFrame(tick); };
+  if (target > 0) requestAnimationFrame(tick); else el.textContent = 0;
+}
+</script>
+
+
+</body></html>
